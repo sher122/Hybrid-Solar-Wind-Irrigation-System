@@ -1,0 +1,34 @@
+#define solarPin 36  // VP
+#define windPin 39   // VN
+#define relayPin 15
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(relayPin, OUTPUT);
+}
+
+void loop() {
+  int solarADC = analogRead(solarPin);
+  int windADC = analogRead(windPin);
+
+  // Convert ADC values to voltage (based on voltage divider scaling)
+  float solarVolt = (solarADC / 4095.0) * 20.0;  // Adjust 25.0 if needed
+  float windVolt  = (windADC / 4095.0) * 15.0;
+
+  Serial.print("Solar Voltage: ");
+  Serial.print(solarVolt);
+  Serial.print(" V | Wind Voltage: ");
+  Serial.print(windVolt);
+  Serial.println(" V");
+
+  // Relay logic: Switch to source with higher voltage
+  if (solarVolt > windVolt) {
+    digitalWrite(relayPin, HIGH);  // Use solar (NO)
+    Serial.println("Relay Switched to: SOLAR");
+  } else {
+    digitalWrite(relayPin, LOW);   // Use wind (NC)
+    Serial.println("Relay Switched to: WIND");
+  }
+
+  delay(5000);  // 2 sec delay for readability
+}
